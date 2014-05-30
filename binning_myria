@@ -1,0 +1,18 @@
+AllData = SCAN(armbrustlab:seaflow:all_data_linear_pop);
+
+
+DEF makebins(x): x//(pow(10,3.5)/16);
+
+AllDataBinned = SELECT Cruise, Day, File_Id,
+                            makebins(fsc_small) AS fsc_bin,
+                            makebins(chl_small) AS chl_bin,
+                            makebins(pe) AS pe_bin,
+                            COUNT(fsc_small) AS num_particles
+			    FROM AllData
+				WHERE pop!=beads AND pop!=unknown;
+                            
+Richness = SELECT Cruise, Day, File_Id,
+                            COUNT(num_particles) AS richness
+                            FROM AllDataBinned;
+                            
+STORE(Richness, armbrustlab:seaflow:richness);
